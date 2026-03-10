@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bolt Action Dice Bag</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div>
+          <h1>Bolt Action Dice Bag</h1>
+          <p class="muted">Start a new game: pick factions and how many units are on the table.</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <form method="post" action="/start" class="form-grid">
+          <div class="field">
+            <label for="a_name">Faction A</label>
+            <input list="factions" id="a_name" name="a_name" value="Germany" required />
+          </div>
+
+          <div class="field">
+            <label for="b_name">Faction B</label>
+            <input list="factions" id="b_name" name="b_name" value="USA" required />
+          </div>
+
+          <datalist id="factions">
+            {% for f in default_factions %}
+              <option value="{{ f }}"></option>
+            {% endfor %}
+          </datalist>
+
+          <div class="field">
+            <label for="a_units">Units A</label>
+            <input id="a_units" name="a_units" type="number" min="0" max="40" value="10" required />
+          </div>
+
+          <div class="field">
+            <label for="b_units">Units B</label>
+            <input id="b_units" name="b_units" type="number" min="0" max="40" value="10" required />
+          </div>
+
+          <div class="field">
+            <label for="n_turns">Turns</label>
+            <input id="n_turns" name="n_turns" type="number" min="1" max="12" value="6" required />
+          </div>
+
+          <div class="field actions">
+            <button class="btn primary" type="submit">Start</button>
+          </div>
+        </form>
+      </section>
+
+      {% if state.game %}
+      <section class="card">
+        <p class="muted">A game is already running.</p>
+        <div class="row">
+          <a class="btn" href="/game">Go to game</a>
+          <form method="post" action="/action/reset">
+            <button class="btn danger" type="submit">Reset</button>
+          </form>
+        </div>
+      </section>
+      {% endif %}
+    </div>
+  </body>
+</html>
+

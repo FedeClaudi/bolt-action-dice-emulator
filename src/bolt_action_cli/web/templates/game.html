@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bolt Action Dice Bag</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div>
+          <h1>Turn {{ status.turn }} / {{ status.n_turns }}</h1>
+          <p class="muted">Pull action dice, roll D6s, and record casualties.</p>
+        </div>
+        <div class="row">
+          <a class="btn" href="/">New game</a>
+          <form method="post" action="/action/reset">
+            <button class="btn danger" type="submit">Reset</button>
+          </form>
+        </div>
+      </header>
+
+      {% if state.flash %}
+        <div class="flash">{{ state.flash }}</div>
+      {% endif %}
+
+      <section class="card">
+        <h2>Status</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Army</th>
+              <th>Units</th>
+              <th>Dice remaining</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ status.A.name }}</td>
+              <td>{{ status.A.units }}</td>
+              <td>{{ status.A.dice_remaining }}</td>
+            </tr>
+            <tr>
+              <td>{{ status.B.name }}</td>
+              <td>{{ status.B.units }}</td>
+              <td>{{ status.B.dice_remaining }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="grid">
+        <section class="card">
+          <h2>Actions</h2>
+          <div class="row wrap">
+            <form method="post" action="/action/pull">
+              <button class="btn primary" type="submit" {% if not status.has_remaining_dice %}disabled{% endif %}>
+                Pull die
+              </button>
+            </form>
+
+            <form method="post" action="/action/next_turn">
+              <button class="btn" type="submit">Next turn</button>
+            </form>
+          </div>
+
+          <hr class="sep" />
+
+          <h3>Roll D6</h3>
+          <form method="post" action="/action/roll" class="row wrap">
+            <div class="field inline">
+              <label for="n">Dice</label>
+              <input id="n" name="n" type="number" min="1" max="50" value="1" required />
+            </div>
+            <button class="btn" type="submit">Roll</button>
+          </form>
+
+          <hr class="sep" />
+
+          <h3>Casualties (remove dead units)</h3>
+          <form method="post" action="/action/kill" class="row wrap">
+            <div class="field inline">
+              <label for="army">Army</label>
+              <select id="army" name="army">
+                <option value="A">A ({{ status.A.name }})</option>
+                <option value="B">B ({{ status.B.name }})</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label for="dead">Dead</label>
+              <input id="dead" name="n" type="number" min="1" max="20" value="1" required />
+            </div>
+            <button class="btn danger" type="submit">Remove</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>Last results</h2>
+          <div class="stack">
+            <div>
+              <h3>Last pulled</h3>
+              {% if last_pulled %}
+                <div class="pill">
+                  {{ 'A' if last_pulled.army == 'A' else 'B' }} — {{ last_pulled.name }} activates
+                </div>
+              {% else %}
+                <p class="muted">No pull yet.</p>
+              {% endif %}
+            </div>
+
+            <div>
+              <h3>Last roll</h3>
+              {% if last_roll %}
+                <p class="muted">Rolled {{ last_roll.n }} dice.</p>
+                <div class="hist">
+                  {% for face in range(1,7) %}
+                    {% set c = last_roll.counts[face] %}
+                    <div class="hist-row">
+                      <div class="hist-face">{{ face }}</div>
+                      <div class="hist-bar">
+                        <div class="hist-fill" style="width: {{ (c * 12) }}px"></div>
+                      </div>
+                      <div class="hist-count">{{ c }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="muted">No roll yet.</p>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="card">
+        <h2>History</h2>
+        {% if state.history %}
+          <ul class="history">
+            {% for ev in state.history|reverse %}
+              <li>
+                <span class="badge">{{ ev.type }}</span>
+                <span class="muted">Turn {{ ev.turn }}</span>
+                {% if ev.type == 'pull' %}
+                  — {{ ev.name }} activates
+                {% elif ev.type == 'roll' %}
+                  — rolled {{ ev.n }} dice
+                {% elif ev.type == 'kill' %}
+                  — {{ ev.n }} removed from {{ ev.name }}
+                {% elif ev.type == 'next_turn' %}
+                  — advanced to turn {{ ev.turn }}
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">No actions yet.</p>
+        {% endif %}
+      </section>
+    </div>
+  </body>
+</html>
+

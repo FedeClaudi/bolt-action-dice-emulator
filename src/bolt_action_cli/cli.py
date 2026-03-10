@@ -23,5 +23,22 @@ def play(
     game.play()
 
 
+@app.command()
+def web(
+    host: str = "127.0.0.1",
+    port: int = 8001,
+    reload: bool = True,
+):
+    """Run the server-rendered webapp."""
+    import uvicorn
+
+    uvicorn.run(
+        "bolt_action_cli.web.app:app",
+        host=host,
+        port=port,
+        reload=reload,
+    )
+
+
 if __name__ == "__main__":
     app()

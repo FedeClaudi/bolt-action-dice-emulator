@@ -1,0 +1,24 @@
+{
+  "id": "c21acb60-7e97-4a69-bb2c-1c139299e70d",
+  "name": "FCs arm",
+  "faction": null,
+  "items": [
+    {
+      "unit_def_id": "us_rifle_squad",
+      "quantity": 1,
+      "selected_option_ids": []
+    },
+    {
+      "unit_def_id": "us_lieutenant",
+      "quantity": 1,
+      "selected_option_ids": []
+    },
+    {
+      "unit_def_id": "mortar_team",
+      "quantity": 1,
+      "selected_option_ids": [
+        "spotter"
+      ]
+    }
+  ]
+}

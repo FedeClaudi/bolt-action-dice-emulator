@@ -11,8 +11,12 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 
 dependencies = [
+    "fastapi",
+    "jinja2",
+    "python-multipart",
     "rich",
     "typer",
+    "uvicorn[standard]",
 ]
 
 keywords = []

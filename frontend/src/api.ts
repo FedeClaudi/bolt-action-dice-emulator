@@ -11,6 +11,7 @@ export type OptionDef = {
 export type UnitDef = {
   id: string;
   name: string;
+  description: string;
   base_points: number;
   options: OptionDef[];
 };
@@ -23,6 +24,7 @@ export type ArmyItem = {
   unit_def_id: string;
   quantity: number;
   selected_options: { id: string; count: number }[];
+  platoon?: string | null;
 };
 
 export type ArmyList = {

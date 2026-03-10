@@ -26,6 +26,7 @@ class OptionDef(BaseModel):
 class UnitDef(BaseModel):
     id: UnitId
     name: str
+    description: str
     base_points: int
     options: list[OptionDef] = Field(default_factory=list)
 
@@ -43,6 +44,7 @@ class ArmyItem(BaseModel):
     unit_def_id: UnitId
     quantity: int = Field(default=1, ge=1)
     selected_options: list[SelectedOption] = Field(default_factory=list)
+    platoon: str | None = None
 
 
 class ArmyList(BaseModel):

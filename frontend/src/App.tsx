@@ -22,6 +22,9 @@ function App() {
   const [points, setPoints] = useState<PointsResponse | null>(null);
   const [error, setError] = useState<string>("");
 
+  const [platoons, setPlatoons] = useState<string[]>(["platoon_1"]);
+  const [activePlatoonId, setActivePlatoonId] = useState<string>("platoon_1");
+
   const unitsById = useMemo(() => {
     const map = new Map<string, UnitDef>();
     for (const u of catalog?.units ?? []) map.set(u.id, u);
@@ -61,6 +64,7 @@ function App() {
       unit_def_id: unitId,
       quantity: 1,
       selected_options: [],
+      platoon: activePlatoonId,
     };
     setArmy((a) => ({ ...a, items: [...a.items, item] }));
   }
@@ -140,11 +144,19 @@ function App() {
 
   return (
     <>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: 16 }}>
-        <h1 style={{ marginBottom: 8 }}>Bolt Action Army List Builder (v1)</h1>
-        <p style={{ marginTop: 0, opacity: 0.8 }}>
-          Demo catalog + points-only, persisted as local JSON via the FastAPI backend.
-        </p>
+      <div
+        style={{
+          maxWidth: 1160,
+          margin: "0 auto",
+          padding: "20px 16px 32px",
+        }}
+      >
+        <header style={{ marginBottom: 16 }}>
+          <h1 style={{ marginBottom: 4, fontSize: 26 }}>Bolt Action Army List Builder</h1>
+          <p style={{ marginTop: 0, opacity: 0.8, fontSize: 13 }}>
+            Demo catalog + points-only, saved locally via the FastAPI backend.
+          </p>
+        </header>
 
         {error ? (
           <div style={{ border: "1px solid #b91c1c", padding: 12, borderRadius: 8 }}>
@@ -152,35 +164,42 @@ function App() {
           </div>
         ) : null}
 
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            alignItems: "stretch",
-            marginTop: 16,
-          }}
-        >
-          <div style={{ flex: 1, border: "1px solid #333", borderRadius: 8, padding: 12 }}>
+        <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginTop: 12 }}>
+          <div
+            style={{
+              flex: 1,
+              borderRadius: 16,
+              padding: 14,
+              background: "rgba(15,23,42,0.92)",
+              boxShadow: "0 18px 40px rgba(0,0,0,0.55)",
+              border: "1px solid rgba(55,65,81,0.8)",
+            }}
+          >
             <h2 style={{ marginTop: 0 }}>Catalog</h2>
             {!catalog ? (
               <div>Loading…</div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {catalog.units.map((u) => (
                   <div
                     key={u.id}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      gap: 12,
-                      padding: 8,
-                      borderRadius: 8,
-                      border: "1px solid #222",
+                      gap: 10,
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid rgba(31,41,55,0.9)",
+                      background:
+                        "radial-gradient(circle at top left, rgba(31,41,55,0.95), rgba(15,23,42,0.98))",
                     }}
                   >
                     <div>
-                      <div style={{ fontWeight: 600 }}>{u.name}</div>
-                      <div style={{ opacity: 0.8, fontSize: 12 }}>Base: {u.base_points} pts</div>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{u.name}</div>
+                      <div style={{ opacity: 0.75, fontSize: 11 }}>{u.description}</div>
+                      <div style={{ opacity: 0.7, fontSize: 11, marginTop: 2 }}>
+                        Base: {u.base_points} pts
+                      </div>
                     </div>
                     <button onClick={() => addUnit(u.id)}>Add</button>
                   </div>
@@ -189,13 +208,22 @@ function App() {
             )}
           </div>
 
-          <div style={{ flex: 2, border: "1px solid #333", borderRadius: 8, padding: 12 }}>
+          <div
+            style={{
+              flex: 2,
+              borderRadius: 16,
+              padding: 16,
+              background: "rgba(15,23,42,0.96)",
+              boxShadow: "0 18px 40px rgba(0,0,0,0.6)",
+              border: "1px solid rgba(55,65,81,0.9)",
+            }}
+          >
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <h2 style={{ marginTop: 0, marginBottom: 0, flex: 1 }}>Army</h2>
               <button onClick={onSave}>Save</button>
             </div>
 
-            <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 12, marginTop: 10, flexWrap: "wrap" }}>
               <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <span style={{ width: 64, opacity: 0.8 }}>ID</span>
                 <input
@@ -214,7 +242,7 @@ function App() {
               </label>
             </div>
 
-            <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 12, marginTop: 10, flexWrap: "wrap" }}>
               <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <span style={{ width: 64, opacity: 0.8 }}>Load</span>
                 <select
@@ -236,27 +264,84 @@ function App() {
               <button onClick={() => void refreshIndex()}>Refresh index</button>
             </div>
 
-            <div style={{ marginTop: 16 }}>
-              <h3 style={{ marginTop: 0 }}>Units</h3>
+            <div style={{ marginTop: 18 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
+                <h3 style={{ marginTop: 0, marginBottom: 0 }}>Units</h3>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {platoons.map((pid, idx) => (
+                      <button
+                        key={pid}
+                        type="button"
+                        onClick={() => setActivePlatoonId(pid)}
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: 999,
+                          border:
+                            pid === activePlatoonId
+                              ? "1px solid rgba(248,250,252,0.9)"
+                              : "1px solid rgba(75,85,99,0.9)",
+                          background:
+                            pid === activePlatoonId
+                              ? "rgba(248,250,252,0.08)"
+                              : "rgba(15,23,42,0.9)",
+                          fontSize: 11,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {`Platoon ${idx + 1}`}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextId = `platoon_${platoons.length + 1}`;
+                      setPlatoons((prev) => [...prev, nextId]);
+                      setActivePlatoonId(nextId);
+                    }}
+                    style={{ fontSize: 11, padding: "4px 10px", borderRadius: 999 }}
+                  >
+                    + Add platoon
+                  </button>
+                </div>
+              </div>
               {army.items.length === 0 ? (
                 <div style={{ opacity: 0.8 }}>Add units from the catalog to start building.</div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {army.items.map((it, idx) => {
+                  {army.items
+                    .map((it, idx) => ({ it, idx }))
+                    .filter(({ it }) => it.platoon === activePlatoonId)
+                    .map(({ it, idx }) => {
                     const unit = unitsById.get(it.unit_def_id);
                     return (
                       <div
                         key={`${it.unit_def_id}-${idx}`}
-                        style={{ border: "1px solid #222", borderRadius: 8, padding: 12 }}
+                        style={{
+                          border: "1px solid rgba(31,41,55,0.9)",
+                          borderRadius: 14,
+                          padding: 12,
+                          background:
+                            "radial-gradient(circle at top left, rgba(17,24,39,0.98), rgba(15,23,42,1))",
+                        }}
                       >
                         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 700 }}>
                               {unit ? unit.name : it.unit_def_id}
                             </div>
-                            <div style={{ opacity: 0.8, fontSize: 12 }}>
-                              Unit ID: {it.unit_def_id}
-                            </div>
+                            <div style={{ opacity: 0.8, fontSize: 11 }}>Unit ID: {it.unit_def_id}</div>
+                            {unit ? (
+                              <div style={{ opacity: 0.75, fontSize: 11 }}>{unit.description}</div>
+                            ) : null}
                           </div>
                           <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                             Qty

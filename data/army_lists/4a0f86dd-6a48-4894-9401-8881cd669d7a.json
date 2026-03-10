@@ -1,0 +1,165 @@
+{
+  "id": "4a0f86dd-6a48-4894-9401-8881cd669d7a",
+  "name": "Test Army",
+  "faction": null,
+  "items": [
+    {
+      "unit_def_id": "us_platoon_commander",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        },
+        {
+          "id": "extra_men_regular",
+          "count": 2
+        },
+        {
+          "id": "smg",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_1"
+    },
+    {
+      "unit_def_id": "us_medic",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_1"
+    },
+    {
+      "unit_def_id": "us_rangers_squad",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "bar",
+          "count": 1
+        },
+        {
+          "id": "smg",
+          "count": 1
+        },
+        {
+          "id": "extra_men_veteran",
+          "count": 3
+        }
+      ],
+      "platoon": "platoon_1"
+    },
+    {
+      "unit_def_id": "us_rangers_squad",
+      "quantity": 2,
+      "selected_options": [
+        {
+          "id": "bar",
+          "count": 1
+        },
+        {
+          "id": "smg",
+          "count": 3
+        },
+        {
+          "id": "extra_men_veteran",
+          "count": 3
+        }
+      ],
+      "platoon": "platoon_1"
+    },
+    {
+      "unit_def_id": "us_paratrooper_squad",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "smg",
+          "count": 1
+        },
+        {
+          "id": "bar",
+          "count": 1
+        },
+        {
+          "id": "lgm",
+          "count": 1
+        },
+        {
+          "id": "extra_men_regular",
+          "count": 2
+        }
+      ],
+      "platoon": "platoon_1"
+    },
+    {
+      "unit_def_id": "us_platoon_commander",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        },
+        {
+          "id": "extra_men_regular",
+          "count": 1
+        },
+        {
+          "id": "smg",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_2"
+    },
+    {
+      "unit_def_id": "us_light_mortar_team",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_2"
+    },
+    {
+      "unit_def_id": "us_medium_mortar_team",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        },
+        {
+          "id": "spotter",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_2"
+    },
+    {
+      "unit_def_id": "us_heavy_machine_gun_team",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_2"
+    },
+    {
+      "unit_def_id": "us_sniper_team",
+      "quantity": 1,
+      "selected_options": [
+        {
+          "id": "veteran",
+          "count": 1
+        }
+      ],
+      "platoon": "platoon_1"
+    }
+  ]
+}

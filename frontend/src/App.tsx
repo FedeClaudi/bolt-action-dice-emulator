@@ -60,7 +60,7 @@ function App() {
     const item: ArmyItem = {
       unit_def_id: unitId,
       quantity: 1,
-      selected_option_ids: [],
+      selected_options: [],
     };
     setArmy((a) => ({ ...a, items: [...a.items, item] }));
   }
@@ -81,10 +81,37 @@ function App() {
       ...a,
       items: a.items.map((it, i) => {
         if (i !== idx) return it;
-        const set = new Set(it.selected_option_ids);
-        if (set.has(optionId)) set.delete(optionId);
-        else set.add(optionId);
-        return { ...it, selected_option_ids: [...set] };
+        const existing = it.selected_options.find((o) => o.id === optionId);
+        const next =
+          existing && existing.count > 0
+            ? it.selected_options.filter((o) => o.id !== optionId)
+            : [...it.selected_options, { id: optionId, count: 1 }];
+        return { ...it, selected_options: next };
+      }),
+    }));
+  }
+
+  function setOptionCount(idx: number, optionId: string, count: number, group?: string | null) {
+    setArmy((a) => ({
+      ...a,
+      items: a.items.map((it, i) => {
+        if (i !== idx) return it;
+
+        const updated = it.selected_options.filter((o) => o.id !== optionId);
+        if (count > 0) updated.push({ id: optionId, count });
+
+        // If the option belongs to a group, enforce mutual exclusion in the UI by
+        // removing any other options in the same group.
+        if (group) {
+          const unit = unitsById.get(it.unit_def_id);
+          const inGroup = new Set((unit?.options ?? []).filter((o) => o.group === group).map((o) => o.id));
+          return {
+            ...it,
+            selected_options: updated.filter((o) => o.id === optionId || !inGroup.has(o.id)),
+          };
+        }
+
+        return { ...it, selected_options: updated };
       }),
     }));
   }
@@ -248,20 +275,58 @@ function App() {
                           <div style={{ marginTop: 12 }}>
                             <div style={{ fontWeight: 600, marginBottom: 6 }}>Upgrades</div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {unit.options.map((opt) => (
-                                <label
-                                  key={opt.id}
-                                  style={{ display: "flex", gap: 8, alignItems: "center" }}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={it.selected_option_ids.includes(opt.id)}
-                                    onChange={() => toggleOption(idx, opt.id)}
-                                  />
-                                  <span style={{ flex: 1 }}>{opt.name}</span>
-                                  <span style={{ opacity: 0.8 }}>{opt.points_delta} pts</span>
-                                </label>
-                              ))}
+                              {unit.options.map((opt) => {
+                                const kind = opt.kind ?? "toggle";
+                                const sel = it.selected_options.find((o) => o.id === opt.id);
+                                const checked = !!sel && sel.count > 0;
+                                const count = sel?.count ?? 0;
+
+                                if (kind === "count") {
+                                  const max = opt.max_count ?? undefined;
+                                  const per = opt.points_per ?? 0;
+                                  return (
+                                    <div
+                                      key={opt.id}
+                                      style={{ display: "flex", gap: 8, alignItems: "center" }}
+                                    >
+                                      <span style={{ flex: 1 }}>{opt.name}</span>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        max={max}
+                                        value={count}
+                                        onChange={(e) =>
+                                          setOptionCount(
+                                            idx,
+                                            opt.id,
+                                            Number(e.target.value),
+                                            opt.group ?? null,
+                                          )
+                                        }
+                                        style={{ width: 90 }}
+                                      />
+                                      <span style={{ opacity: 0.8 }}>
+                                        +{per} ea{max ? ` (max ${max})` : ""}
+                                      </span>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <label
+                                    key={opt.id}
+                                    style={{ display: "flex", gap: 8, alignItems: "center" }}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() => toggleOption(idx, opt.id)}
+                                    />
+                                    <span style={{ flex: 1 }}>{opt.name}</span>
+                                    <span style={{ opacity: 0.8 }}>{opt.points_delta} pts</span>
+                                  </label>
+                                );
+                              })}
                             </div>
                           </div>
                         ) : null}

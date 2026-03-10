@@ -1,7 +1,11 @@
 export type OptionDef = {
   id: string;
   name: string;
+  kind?: "toggle" | "count";
   points_delta: number;
+  points_per?: number;
+  max_count?: number | null;
+  group?: string | null;
 };
 
 export type UnitDef = {
@@ -18,7 +22,7 @@ export type CatalogResponse = {
 export type ArmyItem = {
   unit_def_id: string;
   quantity: number;
-  selected_option_ids: string[];
+  selected_options: { id: string; count: number }[];
 };
 
 export type ArmyList = {

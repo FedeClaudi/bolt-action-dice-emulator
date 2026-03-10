@@ -6,18 +6,18 @@
     {
       "unit_def_id": "us_rifle_squad",
       "quantity": 1,
-      "selected_option_ids": []
+      "selected_options": []
     },
     {
       "unit_def_id": "us_lieutenant",
       "quantity": 1,
-      "selected_option_ids": []
+      "selected_options": []
     },
     {
       "unit_def_id": "mortar_team",
       "quantity": 1,
-      "selected_option_ids": [
-        "spotter"
+      "selected_options": [
+        { "id": "spotter", "count": 1 }
       ]
     }
   ]
